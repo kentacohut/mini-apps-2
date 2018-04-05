@@ -2,17 +2,18 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const path = require('path');
-const router = express.Router();
 const axios = require('axios');
 
 
 app.use('/', express.static(path.join(__dirname, '../client/public')))
 
 app.use('/api/btc', (req, res) => {
-  let today = req.query.today;
-  let lastMonth = req.query.lastMonth;
+  let start = req.query.start;
+  let end = req.query.end;
+  console.log(start)
+  console.log(end)
   axios.get(
-      `https://api.coindesk.com/v1/bpi/historical/close.json?start=${lastMonth}&end=${today}`
+      `https://api.coindesk.com/v1/bpi/historical/close.json?start=${start}&end=${end}`
       )
     .then((response)=>{
       let data = response.data.bpi;
