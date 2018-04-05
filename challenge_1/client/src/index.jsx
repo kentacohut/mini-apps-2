@@ -1,45 +1,78 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import Chart from "./Components/display";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import Chart from './Components/chart';
+import Dates from './Components/dates'
+import apiKey from '../../config/api';
+import axios from 'axios';
+import moment from 'moment';
 
 class App extends Component {
   constructor(props){
     super(props);
 
     this.state = {
+      startDate: '',
+      endDate: '',
       chartData: {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        labels: [],
         datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255,99,132,1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
+            label: '',
+            data: [],
+            backgroundColor: [],
+            borderColor: []
         }]
       }
     }
+
+    this.getCoinApiData = this.getCoinApiData.bind(this);
+  }
+
+  componentDidMount(){
+    this.getCoinApiData();
+  }
+
+  getCoinApiData() {
+    let today = moment().format('YYYY-MM-DD');
+    let lastMonth = moment().subtract(1, 'months').format('YYYY-MM-DD');
+    axios.get('/api/btc', {
+      params:{
+        today: today,
+        lastMonth: lastMonth
+      }
+    })
+    .then((response) => {
+      let dates = response.data.dates;
+      let values = response.data.values;
+      this.setState({
+        startDate: lastMonth,
+        endDate: today,
+        chartData: {
+          labels: dates,
+          datasets: [{
+              label: 'Price of BTC',
+              data: values,
+              backgroundColor: [],
+              borderColor: []
+          }]
+        }
+      })
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   render() {
-  const { chartData } = this.state;
+  const { chartData, startDate, endDate } = this.state;
   return (
     <div>
-      <h1>Hello World!</h1>
-      <Chart chartData = { chartData }/>
+      <Chart 
+        chartData = { chartData }
+      />
+      <Dates 
+        startDate = { startDate } 
+        endDate = { endDate }
+      />
     </div>
     )
   }
