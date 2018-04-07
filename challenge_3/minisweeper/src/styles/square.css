@@ -1,0 +1,14 @@
+.square {
+  width:20px;
+  height: 20px;
+  border-style: solid;
+  border-width: thin;
+}
+
+.unclicked {
+  background-color: grey;
+}
+
+.clicked {
+  background-color: white;
+}
